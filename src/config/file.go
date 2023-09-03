@@ -3,19 +3,12 @@ package config
 import (
 	"encoding/json"
 	"os"
-	mylog "translation-tool/src/log"
+	"translation-tool/src/services/log"
 )
 
 var File *Config
 
 const configFileName = "config.json"
-
-type Config struct {
-	Locales           []string `json:"localesPath"`
-	CopyFromLocale    string   `json:"CopyFromLocale"`
-	ToLocale          string   `json:"toLocale"`
-	TranslateFilePath string   `json:"translateFilePath"`
-}
 
 func init() {
 	file, err := ReadFile()
@@ -46,23 +39,23 @@ func CreateFile() {
 	}, "", "")
 
 	if err != nil {
-		mylog.Write(err.Error())
+		log.WriteFile(err.Error())
 	}
 
 	_, err = createdFile.Write(jsonString)
 
 	if err != nil {
-		mylog.Write(err.Error())
+		log.WriteFile(err.Error())
 	}
 
-	mylog.Write("config file created")
+	log.WriteFile("config file created")
 }
 
 func ReadFile() (*Config, error) {
 	file, err := os.ReadFile(configFileName)
 
 	if err != nil {
-		mylog.Write(err.Error())
+		log.WriteFile(err.Error())
 		return nil, err
 	}
 
