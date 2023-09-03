@@ -17,7 +17,7 @@ func createFile() *os.File {
 	return createdFile
 }
 
-func Write(msg string) {
+func WriteFile(msg string) {
 	file, err := os.OpenFile(logFileName, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0777)
 
 	if err != nil {
