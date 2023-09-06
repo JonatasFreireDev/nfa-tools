@@ -30,23 +30,26 @@ func GetJsonFileName(localePath string) string {
 	return jsonNameSplite[len(jsonNameSplite)-3]
 }
 
-func updateJson(data any, keyValueMap map[string]string) {
+func updateJson(data any, keyValueMap map[string]string, path []string) {
 	switch v := data.(type) {
 	case map[string]any:
 		for key, val := range v {
+			path = append(path, key)
 			if strVal, ok := val.(string); ok {
 				if newValue, exists := keyValueMap[strings.TrimSpace(strVal)]; exists {
 					v[key] = newValue
-					log.WriteFile(fmt.Sprintf("Substituído: [%s] %s -> %s", key, val, newValue))
+					log.WriteFile(fmt.Sprintf("Substituído: [%s] %s -> %s", strings.Join(path, "."), val, newValue))
 				}
 			} else {
-				updateJson(val, keyValueMap)
+				updateJson(val, keyValueMap, path)
 			}
+
+			path = path[:len(path)-1]
 		}
 	case []interface{}:
 		// O valor é uma lista; faça uma chamada recursiva para cada elemento da lista
 		for i, val := range v {
-			updateJson(val, keyValueMap)
+			updateJson(val, keyValueMap, path)
 			v[i] = val // Atualize o valor na lista
 		}
 	}

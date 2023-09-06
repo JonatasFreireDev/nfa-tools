@@ -32,4 +32,5 @@ func main() {
 
 	log.WriteFile("Tempo de execução: ")
 	log.WriteFile(fmt.Sprintln(endTime.Sub(startTime)))
+	fmt.Println("Done")
 }

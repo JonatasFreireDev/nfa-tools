@@ -104,7 +104,7 @@ func UpdateLocales(folderName string, filePath string, spreadSheet map[string]st
 		log.WriteFile(err.Error())
 	}
 
-	updateJson(jsonData, spreadSheet)
+	updateJson(jsonData, spreadSheet, []string{})
 
 	// Você pode codificar a estrutura de dados atualizada de volta em JSON
 	jsonDataEncoded, err := json.MarshalIndent(jsonData, "", "")
@@ -112,8 +112,6 @@ func UpdateLocales(folderName string, filePath string, spreadSheet map[string]st
 	if err != nil {
 		log.WriteFile(err.Error())
 	}
-
-	fmt.Println(string(jsonDataEncoded))
 
 	// Se desejar, você pode gravar os dados atualizados em um novo arquivo JSON
 	outFile, err := os.Create(filePath)
