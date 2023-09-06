@@ -37,7 +37,7 @@ func updateJson(data any, keyValueMap map[string]string) {
 			if strVal, ok := val.(string); ok {
 				if newValue, exists := keyValueMap[strings.TrimSpace(strVal)]; exists {
 					v[key] = newValue
-					log.WriteFile(fmt.Sprintf("Substituído: %s -> %s", val, newValue))
+					log.WriteFile(fmt.Sprintf("Substituído: [%s] %s -> %s", key, val, newValue))
 				}
 			} else {
 				updateJson(val, keyValueMap)
