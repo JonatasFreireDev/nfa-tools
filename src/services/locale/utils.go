@@ -17,7 +17,7 @@ func IdentifyOS() string {
 
 func GetJsonFileName(localePath string) string {
 	localeSplite := strings.Split(localePath, IdentifyOS())
-	folderName := localeSplite[len(localeSplite)-1]
+	folderName := localeSplite[len(localeSplite)-3]
 
 	jsonNameSplite := strings.Split(folderName, "-")
 
@@ -27,7 +27,7 @@ func GetJsonFileName(localePath string) string {
 		return strings.Join(restSlice, "-")
 	}
 
-	return jsonNameSplite[len(jsonNameSplite)-1]
+	return jsonNameSplite[len(jsonNameSplite)-3]
 }
 
 func updateJson(data any, keyValueMap map[string]string) {
