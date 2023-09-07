@@ -1,8 +1,10 @@
 package locale
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
+	"slices"
 	"strings"
 	"translation-tool/src/services/log"
 )
@@ -15,19 +17,30 @@ func IdentifyOS() string {
 	}
 }
 
-func GetJsonFileName(localePath string) string {
+func GetJsonFileName(localePath string) (string, error) {
 	localeSplite := strings.Split(localePath, IdentifyOS())
-	folderName := localeSplite[len(localeSplite)-3]
 
-	jsonNameSplite := strings.Split(folderName, "-")
+	indexFolderName := slices.IndexFunc(localeSplite, func(s string) bool {
+		foundFolder := strings.Contains(s, "nfa-")
 
-	if len(jsonNameSplite) > 0 {
-		restSlice := jsonNameSplite[1:]
+		if foundFolder {
+			return true
+		} else {
+			return false
+		}
+	})
 
-		return strings.Join(restSlice, "-")
+	if indexFolderName < 0 {
+		return "", errors.New("nfa folder not found")
 	}
 
-	return jsonNameSplite[len(jsonNameSplite)-3]
+	jsonNameSplite := strings.Split(localeSplite[indexFolderName], "-")
+
+	if len(jsonNameSplite) > 0 {
+		return strings.Join(jsonNameSplite[1:], "-"), nil
+	} else {
+		return jsonNameSplite[0], nil
+	}
 }
 
 func updateJson(data any, keyValueMap map[string]string, path []string) {

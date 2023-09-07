@@ -49,10 +49,18 @@ func CreateFile(nameDir string, nameCreatedFile string, nameCopyFile string) {
 func FindFilesPath() (map[string]string, error) {
 	foundLocales := map[string]string{}
 
+	if len(config.File.Locales) == 0 || config.File.Locales == nil {
+		return nil, errors.New("Theres is no Locale strings in config.json")
+	}
+
 	for _, localePath := range config.File.Locales {
 		localeFolder, _ := os.ReadDir(localePath)
 		fileWasFound := false
-		folderName := GetJsonFileName(localePath)
+		folderName, err := GetJsonFileName(localePath)
+
+		if err != nil {
+			return nil, err
+		}
 
 		for _, folderInLocale := range localeFolder {
 			//entra na pasta da lingua desejada
