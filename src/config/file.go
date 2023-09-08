@@ -32,9 +32,10 @@ func CreateFile() {
 	defer createdFile.Close()
 
 	jsonString, err := json.MarshalIndent(Config{
-		CopyFromLocale:    "xx-XX",
 		ToLocale:          "xx-XX",
 		TranslateFilePath: "pathToXLSX",
+		CopyFromLocale:    "xx-XX",
+		CustomFilesPaths:  []string{},
 		Locales:           []string{"pathToLocaleString"},
 	}, "", "")
 

@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"translation-tool/src/config"
 	"translation-tool/src/services/log"
 )
@@ -56,7 +57,7 @@ func FindFilesPath() (map[string]string, error) {
 	for _, localePath := range config.File.Locales {
 		localeFolder, _ := os.ReadDir(localePath)
 		fileWasFound := false
-		folderName, err := GetJsonFileName(localePath)
+		folderName, err := GetNfaFileName(localePath)
 
 		if err != nil {
 			return nil, err
@@ -84,6 +85,25 @@ func FindFilesPath() (map[string]string, error) {
 			//Adiciona nos locales
 			// foundLocales = append(foundLocales, nameCreatedFile)
 			foundLocales[config.File.ToLocale+"/"+folderName] = nameCreatedFile
+		}
+	}
+
+	if len(config.File.CustomFilesPaths) > 0 {
+		for _, filePath := range config.File.CustomFilesPaths {
+			isJson := strings.Contains(filePath, ".json")
+
+			if !isJson {
+				continue
+			}
+
+			folderName, err := GetNfaFileName(filePath)
+			fileName := GetJsonFileName(filePath)
+
+			if err != nil {
+				return nil, err
+			}
+
+			foundLocales[config.File.ToLocale+"/"+folderName+"/"+fileName] = filePath
 		}
 	}
 

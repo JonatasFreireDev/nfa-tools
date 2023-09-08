@@ -1,8 +1,9 @@
 package config
 
 type Config struct {
-	Locales           []string `json:"localesPath"`
-	CopyFromLocale    string   `json:"CopyFromLocale"`
+	CopyFromLocale    string   `json:"copyFromLocale"`
 	ToLocale          string   `json:"toLocale"`
 	TranslateFilePath string   `json:"translateFilePath"`
+	Locales           []string `json:"localesPath"`
+	CustomFilesPaths  []string `json:"customFilesPaths"`
 }

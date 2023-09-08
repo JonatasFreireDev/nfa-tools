@@ -17,8 +17,14 @@ func IdentifyOS() string {
 	}
 }
 
-func GetJsonFileName(localePath string) (string, error) {
-	localeSplite := strings.Split(localePath, IdentifyOS())
+func GetJsonFileName(filePath string) string {
+	localeSplite := strings.Split(filePath, IdentifyOS())
+
+	return localeSplite[len(localeSplite)-1]
+}
+
+func GetNfaFileName(filePath string) (string, error) {
+	localeSplite := strings.Split(filePath, IdentifyOS())
 
 	indexFolderName := slices.IndexFunc(localeSplite, func(s string) bool {
 		foundFolder := strings.Contains(s, "nfa-")
