@@ -96,12 +96,8 @@ func FindFilesPath() (map[string]string, error) {
 				continue
 			}
 
-			folderName, err := GetNfaFileName(filePath)
+			folderName, _ := GetNfaFileName(filePath)
 			fileName := GetJsonFileName(filePath)
-
-			if err != nil {
-				return nil, err
-			}
 
 			foundLocales[config.File.ToLocale+"/"+folderName+"/"+fileName] = filePath
 		}
