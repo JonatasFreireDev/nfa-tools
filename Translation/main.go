@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	
+	"https://github.com/JonatasFreireDev/nfa-tools/tree/dev/shared"
 )
 
 func main() {

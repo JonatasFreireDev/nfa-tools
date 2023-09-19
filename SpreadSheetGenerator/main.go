@@ -1,16 +1,16 @@
 package main
 
 import (
+	locale "command-line-argumentsD:\\code\\nfa-translation-tool\\Translation\\services\\locale.go"
 	"fmt"
 	"time"
-	"translation-tool/src/services/locale"
-	"translation-tool/src/services/log"
-	"translation-tool/src/services/spreadSheetReader"
 )
 
 func main() {
 	startTime := time.Now()
 	log.WriteFile("Tempo de execução: ")
+
+	locale.FindFilesPath()
 	log.WriteFile(fmt.Sprintln(endTime.Sub(startTime)))
 	fmt.Println("Done")
 }

@@ -1,8 +1,6 @@
 package spreadSheetReader
 
 import (
-	"translation-tool/src/config"
-
 	"github.com/thedatashed/xlsxreader"
 )
 
