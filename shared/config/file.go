@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
-	"translation-tool/src/services/log"
+	"shared/log"
 )
 
 var File *Config

@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"shared/log"
+	"shared/spreadSheetReader"
 	"time"
-	"https://github.com/JonatasFreireDev/nfa-tools/tree/dev/shared"
+	"translation-tool/service"
 )
 
 func main() {
@@ -11,7 +13,7 @@ func main() {
 	//entra em cada pasta referenciado em locale.
 	//ler o arquivo que deve ser alterado
 	// se o arquivo nao existir, criar com base em outro locale
-	filesPath, err := locale.FindFilesPath()
+	filesPath, err := service.FindFilesPath()
 
 	if err != nil {
 		log.WriteFile(err.Error())
@@ -23,7 +25,7 @@ func main() {
 	//comparar o que deve ou nao ser alterado
 	//alterar e salvar
 	for folderName, filePath := range filesPath {
-		locale.UpdateLocales(folderName, filePath, spreadSheet)
+		service.UpdateLocales(folderName, filePath, spreadSheet)
 	}
 
 	endTime := time.Now()

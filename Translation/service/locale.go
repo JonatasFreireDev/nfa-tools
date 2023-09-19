@@ -1,4 +1,4 @@
-package locale
+package service
 
 import (
 	"encoding/json"
@@ -7,44 +7,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"shared/config"
+	"shared/log"
+	"shared/utils"
 	"strings"
-	"translation-tool/src/config"
-	"translation-tool/src/services/log"
 )
-
-func CreateFile(nameDir string, nameCreatedFile string, nameCopyFile string) {
-	//Cria diretorio
-	err := os.Mkdir(nameDir, os.ModePerm)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
-
-	//Cria arquivo json
-	createdLocaleFile, err := os.Create(nameCreatedFile)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
-
-	defer createdLocaleFile.Close()
-
-	//Abre arquivo json de referencia.
-	existingFile, err := os.Open(nameCopyFile)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
-
-	defer existingFile.Close()
-
-	//Copia conteudo de um arquivo para o outro
-	_, err = io.Copy(createdLocaleFile, existingFile)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
-}
 
 // Pega o caminho de cada locale, se nao existir, o locale e criado
 func FindFilesPath() (map[string]string, error) {
@@ -56,8 +23,8 @@ func FindFilesPath() (map[string]string, error) {
 
 	for _, localePath := range config.File.Locales {
 		localeFolder, _ := os.ReadDir(localePath)
+		folderName, err := utils.GetNfaFileName(localePath)
 		fileWasFound := false
-		folderName, err := GetNfaFileName(localePath)
 
 		if err != nil {
 			return nil, err
@@ -96,8 +63,8 @@ func FindFilesPath() (map[string]string, error) {
 				continue
 			}
 
-			folderName, _ := GetNfaFileName(filePath)
-			fileName := GetJsonFileName(filePath)
+			folderName, _ := utils.GetNfaFileName(filePath)
+			fileName := utils.GetJsonFileName(filePath)
 
 			foundLocales[config.File.ToLocale+"/"+folderName+"/"+fileName] = filePath
 		}
@@ -110,45 +77,71 @@ func FindFilesPath() (map[string]string, error) {
 	return nil, errors.New("File Locale not found")
 }
 
+func CreateFile(nameDir string, nameCreatedFile string, nameCopyFile string) {
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.WriteFile(fmt.Errorf("%v", msg).Error())
+		}
+	}()
+
+	//Cria diretorio
+	os.Mkdir(nameDir, os.ModePerm)
+
+	//Cria arquivo json
+	createdLocaleFile, _ := os.Create(nameCreatedFile)
+	defer createdLocaleFile.Close()
+
+	//Abre arquivo json de referencia.
+	existingFile, _ := os.Open(nameCopyFile)
+	defer existingFile.Close()
+
+	//Copia conteudo de um arquivo para o outro
+	io.Copy(createdLocaleFile, existingFile)
+}
+
 func UpdateLocales(folderName string, filePath string, spreadSheet map[string]string) {
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.WriteFile(fmt.Errorf("%v", msg).Error())
+		}
+	}()
+
 	log.WriteFile(fmt.Sprintf("File: ---------------------------------------------------- %s ", folderName))
 
-	file, err := os.Open(filePath)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
-
+	file, _ := os.Open(filePath)
 	defer file.Close()
 
 	var jsonData any
-	decoder := json.NewDecoder(file)
-
-	if err := decoder.Decode(&jsonData); err != nil {
-		log.WriteFile(err.Error())
-	}
+	json.NewDecoder(file).Decode(&jsonData)
 
 	updateJson(jsonData, spreadSheet, []string{})
 
 	// Você pode codificar a estrutura de dados atualizada de volta em JSON
-	jsonDataEncoded, err := json.MarshalIndent(jsonData, "", "")
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
+	jsonDataEncoded, _ := json.MarshalIndent(jsonData, "", "  ")
 
 	// Se desejar, você pode gravar os dados atualizados em um novo arquivo JSON
-	outFile, err := os.Create(filePath)
-
-	if err != nil {
-		log.WriteFile(err.Error())
-	}
+	outFile, _ := os.Create(filePath)
 
 	defer outFile.Close()
 
-	_, err = outFile.Write(jsonDataEncoded)
+	outFile.Write(jsonDataEncoded)
+}
 
-	if err != nil {
-		log.WriteFile(err.Error())
+func updateJson(data any, keyValueMap map[string]string, path []string) {
+	switch v := data.(type) {
+	case map[string]any:
+		for key, val := range v {
+			path = append(path, key)
+			if strVal, ok := val.(string); ok {
+				if newValue, exists := keyValueMap[strings.TrimSpace(strVal)]; exists {
+					v[key] = newValue
+					log.WriteFile(fmt.Sprintf("Substituído: [%s] %s -> %s", strings.Join(path, "."), val, newValue))
+				}
+			} else {
+				updateJson(val, keyValueMap, path)
+			}
+
+			path = path[:len(path)-1]
+		}
 	}
 }
