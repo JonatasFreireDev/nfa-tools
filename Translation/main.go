@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	"translation-tool/src/services/locale"
-	"translation-tool/src/services/log"
-	"translation-tool/src/services/spreadSheetReader"
+	
 )
 
 func main() {
