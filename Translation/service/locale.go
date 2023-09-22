@@ -22,36 +22,36 @@ func FindFilesPath() (map[string]string, error) {
 	}
 
 	for _, localePath := range config.File.Locales {
-		localeFolder, _ := os.ReadDir(localePath)
-		folderName, err := utils.GetNfaFileName(localePath)
+		localesFolders, _ := os.ReadDir(localePath)
+		nfaName, err := utils.GetNfaFileName(localePath)
 		fileWasFound := false
 
 		if err != nil {
 			return nil, err
 		}
 
-		for _, folderInLocale := range localeFolder {
+		for _, localeFolder := range localesFolders {
 			//entra na pasta da lingua desejada
-			if folderInLocale.Name() == config.File.ToLocale {
-				localeTranslateFolder, _ := os.ReadDir(filepath.Join(localePath, folderInLocale.Name()))
+			if localeFolder.Name() == config.File.ToLocale {
+				filesInLocaleFolder, _ := os.ReadDir(filepath.Join(localePath, localeFolder.Name()))
 
 				fileWasFound = true
-				foundLocales[config.File.ToLocale+"/"+folderName] = filepath.Join(localePath, config.File.ToLocale, localeTranslateFolder[0].Name())
-				// foundLocales = append(foundLocales, filepath.Join(localePath, config.File.ToLocale, localeTranslateFolder[0].Name()))
+				foundLocales[config.File.ToLocale+"/"+nfaName] = filepath.Join(localePath, config.File.ToLocale, filesInLocaleFolder[0].Name())
+				// foundLocales = append(foundLocales, filepath.Join(localePath, config.File.ToLocale, filesInLocaleFolder[0].Name()))
 			}
 		}
 
 		//se o arquivo .json nao existe, sera criado aparti
 		if fileWasFound == false {
 			nameDir := filepath.Join(localePath, config.File.ToLocale)
-			nameCreatedFile := filepath.Join(localePath, config.File.ToLocale, folderName+".json")
-			nameCopyFile := filepath.Join(localePath, config.File.CopyFromLocale, folderName+".json")
+			nameCreatedFile := filepath.Join(localePath, config.File.ToLocale, nfaName+".json")
+			nameCopyFile := filepath.Join(localePath, config.File.CopyFromLocale, nfaName+".json")
 
 			CreateFile(nameDir, nameCreatedFile, nameCopyFile)
 
 			//Adiciona nos locales
 			// foundLocales = append(foundLocales, nameCreatedFile)
-			foundLocales[config.File.ToLocale+"/"+folderName] = nameCreatedFile
+			foundLocales[config.File.ToLocale+"/"+nfaName] = nameCreatedFile
 		}
 	}
 
@@ -63,10 +63,10 @@ func FindFilesPath() (map[string]string, error) {
 				continue
 			}
 
-			folderName, _ := utils.GetNfaFileName(filePath)
-			fileName := utils.GetJsonFileName(filePath)
+			nfaName, _ := utils.GetNfaFileName(filePath)
+			jsonFileName := utils.GetJsonFileName(filePath)
 
-			foundLocales[config.File.ToLocale+"/"+folderName+"/"+fileName] = filePath
+			foundLocales[config.File.ToLocale+"/"+nfaName+"/"+jsonFileName] = filePath
 		}
 	}
 
