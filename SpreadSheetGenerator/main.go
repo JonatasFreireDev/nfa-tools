@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SpreadSheet-Generator/service"
 	"bytes"
 	"encoding/csv"
 	"encoding/json"
@@ -17,9 +18,10 @@ import (
 
 func main() {
 	startTime := time.Now()
+	CsvFiles := []string{}
+
 	if len(config.File.Locales) == 0 || config.File.Locales == nil {
-		// return nil, errors.New("Theres is no Locale strings in config.json")
-		//errr
+		log.WriteFile("Theres is no Locale strings in config.json")
 	}
 
 	defer func() {
@@ -80,16 +82,19 @@ func main() {
 			localeFolderPaths[localeFolder.Name()] = teste
 		}
 
-		jsonDataEncoded, _ := json.MarshalIndent(localeFolderPaths, "", "  ")
+		//jsonDataEncoded, _ := json.MarshalIndent(localeFolderPaths, "", "  ")
 
-		fmt.Println(string(jsonDataEncoded))
+		//fmt.Println(string(jsonDataEncoded))
 
-		log.WriteFile(string(jsonDataEncoded))
+		//log.WriteFile(string(jsonDataEncoded))
 
-		time := time.Now().Format("02-01-2006_15:04")
+		timeNow := time.Now().Format("02-01-2006")
+		fileName := nfaFileName + "_" + timeNow + ".csv"
+
+		CsvFiles = append(CsvFiles, fileName)
 
 		// Cria CSV para cada repo
-		file, err := os.Create(nfaFileName + "_" + time + ".csv")
+		file, err := os.Create(fileName)
 
 		if err != nil {
 			log.WriteFile(err.Error())
@@ -128,7 +133,6 @@ func main() {
 			if err := writerCSV.Write(linha); err != nil {
 				log.WriteFile(err.Error())
 			}
-			log.WriteFile(subchave)
 		}
 
 		// Certifique-se de liberar os recursos e escrever os dados no arquivo
@@ -145,7 +149,10 @@ func main() {
 		if err != nil {
 			log.WriteFile(err.Error())
 		}
+	}
 
+	for _, file := range CsvFiles {
+		service.OrderByNameCSV(file)
 	}
 
 	endTime := time.Now()
@@ -161,8 +168,6 @@ func updateJson(data any, path []string, teste map[string]string) {
 		for key, val := range v {
 			path = append(path, key)
 			if value, ok := val.(string); ok {
-				log.WriteFile(strings.Join(path, "."))
-
 				teste[strings.Join(path, ".")] = value
 			} else {
 				updateJson(val, path, teste)
