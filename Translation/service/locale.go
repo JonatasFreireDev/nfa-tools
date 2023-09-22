@@ -143,5 +143,11 @@ func updateJson(data any, keyValueMap map[string]string, path []string) {
 
 			path = path[:len(path)-1]
 		}
+	case []interface{}:
+		// O valor é uma lista; faça uma chamada recursiva para cada elemento da lista
+		for i, val := range v {
+			updateJson(val, keyValueMap, path)
+			v[i] = val // Atualize o valor na lista
+		}
 	}
 }

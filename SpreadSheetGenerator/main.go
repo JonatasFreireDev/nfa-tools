@@ -169,5 +169,11 @@ func updateJson(data any, path []string, teste map[string]string) {
 			}
 			path = path[:len(path)-1]
 		}
+	case []interface{}:
+		// O valor é uma lista; faça uma chamada recursiva para cada elemento da lista
+		for i, val := range v {
+			newPath := append(path, fmt.Sprintf("[%d]", i))
+			updateJson(val, newPath, teste)
+		}
 	}
 }

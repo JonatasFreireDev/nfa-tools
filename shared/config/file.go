@@ -37,7 +37,7 @@ func CreateFile() {
 		CopyFromLocale:    "xx-XX",
 		CustomFilesPaths:  []string{},
 		Locales:           []string{"pathToLocaleString"},
-	}, "", "")
+	}, "", "   ")
 
 	if err != nil {
 		log.WriteFile(err.Error())
